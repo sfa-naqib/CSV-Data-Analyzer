@@ -86,3 +86,68 @@ def clean_text_columns(df):
             df[column] =  df[column].replace('', pd.NA)
 
     return df
+
+
+def clean_text_columns(df):
+    for column in df.columns:
+        if pd.api.types.is_string_dtype(df[column]) or pd.api.types.is_object_dtype(df[column]):
+            df[column] =  df[column].str.strip()
+            df[column] =  df[column].replace('', pd.NA)
+
+    return df
+
+def clean_duplicates(df):
+    duplicate_count = df.duplicated().sum()
+
+    if duplicate_count == 0:
+        print("No duplicates found")
+        return df
+
+    df = df.drop_duplicates(keep='first')
+    print("Duplicate entries deleted")
+    return df
+
+def make_categorical_consistent(df):
+    for column in df.columns:
+        if not (pd.api.types.is_string_dtype(df[column]) or pd.api.types.is_object_dtype(df[column])):
+            continue
+
+        unique_values = df[column].dropna().unique()
+        no_of_unique_values = len(unique_values)
+
+        if no_of_unique_values == 0:
+            continue
+
+        print(f"------------------------------------------------------------")
+        print(f"Process for making Categorical Column values consistent starting... ")
+        print(f"Column Name: {column}")
+        print(f"Number of Unique Values: {no_of_unique_values}")
+        print(f"Unique Values: {list(unique_values)}")
+
+        handling_choice = input("\nWhat do you want to do with this column?:"
+                                "\n1. Make all values lowercase"
+                                "\n2. Make all values uppercase"
+                                "\n3. Make all values title case (First Letter Capital)"
+                                "\n4. Ignore"
+                                "\nEnter Choice: ").strip()
+
+        if handling_choice == '1':
+            df[column] = df[column].str.lower()
+            print(f"{column} converted to lowercase.")
+
+        elif handling_choice == '2':
+            df[column] = df[column].str.upper()
+            print(f"{column} converted to uppercase.")
+
+        elif handling_choice == '3':
+            df[column] = df[column].str.title()
+            print(f"{column} converted to title case.")
+
+        elif handling_choice == '4':
+            print(f"Ignoring {column}. Moving on to the next.")
+            continue
+
+        else:
+            print("Invalid Input. Valid Inputs are 1, 2, 3, 4 only.")
+
+    return df
