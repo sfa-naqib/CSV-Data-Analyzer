@@ -3,7 +3,6 @@ import time
 from cleaner import standardize_column_names, column_type_correction, clean_text_columns, clean_duplicates, make_categorical_consistent
 from missing_values_handling import handling_missing_values
 
-
 filename = input(f"What is the filename of the CSV file: ")
 
 try:
@@ -158,8 +157,9 @@ print('------------------------------------------------------------')
 
 
 output_filename = filename.replace('.csv', '_cleaned.csv')
-df.to_csv(output_filename, index=False)
-print(f"\n\nCleaned file saved as: {output_filename}")
+output_filepath = "Data/" + output_filename
+df.to_csv(output_filepath, index=False)
+print(f"\n\nCleaned file saved as: {output_filepath}")
 
 
 dashboard_choice = input("\nDo you want to create charts for the cleaned data? (y/n): ").strip().lower()

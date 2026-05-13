@@ -45,8 +45,9 @@ def save_dashboard(dashboard_charts):
 
     for i, (chart_name, saved_fig) in enumerate(dashboard_charts):
         saved_fig.canvas.draw()
-        image = np.frombuffer(saved_fig.canvas.tostring_rgb(), dtype=np.uint8)
-        image = image.reshape(saved_fig.canvas.get_width_height()[::-1] + (3,))
+        image = np.frombuffer(saved_fig.canvas.tostring_argb(), dtype=np.uint8)
+        image = image.reshape(saved_fig.canvas.get_width_height()[::-1] + (4,))
+        image = image[:, :, 1:]   # ARGB has 4 channels, this drops the A and keeps RGB
         axes[i].imshow(image)
         axes[i].axis('off')
         axes[i].set_title(chart_name)
@@ -93,7 +94,6 @@ def show_histogram(df, column, dashboard_charts):
     plt.tight_layout()
 
     ask_to_save(f'histogram_{column}', dashboard_charts)
-    plt.show()
 
 def show_line_chart(df, column, dashboard_charts):
     fig, ax = plt.subplots()
@@ -105,7 +105,6 @@ def show_line_chart(df, column, dashboard_charts):
     plt.tight_layout()
 
     ask_to_save(f'line_{column}', dashboard_charts)
-    plt.show()
 
 def show_boxplot_single(df, column, dashboard_charts):
     fig, ax = plt.subplots()
@@ -117,7 +116,6 @@ def show_boxplot_single(df, column, dashboard_charts):
     plt.tight_layout()
 
     ask_to_save(f'boxplot_{column}', dashboard_charts)
-    plt.show()
 
 def show_boxplot_multi(df, column, dashboard_charts):
     numeric_columns = [col for col in df.columns if pd.api.types.is_numeric_dtype(df[col]) and col != column]
@@ -167,7 +165,6 @@ def show_boxplot_multi(df, column, dashboard_charts):
     plt.tight_layout()
 
     ask_to_save('boxplot_comparison', dashboard_charts)
-    plt.show()
 
 def show_scatter_chart(df, column, dashboard_charts):
     numeric_columns = [col for col in df.columns if pd.api.types.is_numeric_dtype(df[col]) and col != column]
@@ -204,7 +201,6 @@ def show_scatter_chart(df, column, dashboard_charts):
     plt.tight_layout()
 
     ask_to_save(f'scatter_{column}_vs_{column_y}', dashboard_charts)
-    plt.show()
 
 def show_grouped_bar_chart(df, column, dashboard_charts):
     text_columns = [col for col in df.columns
@@ -257,7 +253,6 @@ def show_grouped_bar_chart(df, column, dashboard_charts):
     plt.tight_layout()
 
     ask_to_save(f'grouped_{column}_by_{group_column}', dashboard_charts)
-    plt.show()
 
 def show_count_bar_chart(df, column, dashboard_charts):
     counts = df[column].value_counts()
@@ -271,7 +266,6 @@ def show_count_bar_chart(df, column, dashboard_charts):
     plt.tight_layout()
 
     ask_to_save(f'count_bar_{column}', dashboard_charts)
-    plt.show()
 
 def show_pie_chart(df, column, dashboard_charts):
     counts = df[column].value_counts()
@@ -296,7 +290,6 @@ def show_pie_chart(df, column, dashboard_charts):
     plt.tight_layout()
 
     ask_to_save(f'pie_{column}', dashboard_charts)
-    plt.show()
 
 def show_stacked_bar_chart(df, column, dashboard_charts):
     text_columns = [col for col in df.columns
@@ -349,7 +342,6 @@ def show_stacked_bar_chart(df, column, dashboard_charts):
     plt.tight_layout()
 
     ask_to_save(f'stacked_{column}_by_{stack_column}', dashboard_charts)
-    plt.show()
 
 def show_chart_menu_for_numeric(df, column, dashboard_charts):
     chart_choice = input(f"\n{column} is a numeric column. What chart do you want?:"
