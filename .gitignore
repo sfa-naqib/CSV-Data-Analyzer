@@ -1,3 +1,6 @@
 jupyter test.ipynb
 matplotlib test.ipynb
 logic.py
+Charts/
+Data/
+Output/
