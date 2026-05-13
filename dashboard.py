@@ -393,6 +393,7 @@ def show_chart_menu_for_text(df, column, dashboard_charts):
         print("Invalid Input. Valid Inputs are 1, 2, 3 only.")
 
 def run(df):
+    dashboard_charts = []
     print('------------------------------------------------------------')
     print("Welcome to the Dashboard")
     print('\u203e'*24)
@@ -430,9 +431,7 @@ def run(df):
 
         print()
 
-        dashboard_charts = []   
-
-        if dashboard_charts:
-            save_choice = input(f"\nYou have {len(dashboard_charts)} charts in your dashboard. Save it? (y/n): ").strip().lower()
-            if save_choice == 'y':
-                save_dashboard(dashboard_charts)
+    if dashboard_charts:
+        save_choice = input(f"\nYou have {len(dashboard_charts)} charts in your dashboard. Save it? (y/n): ").strip().lower()
+        if save_choice == 'y':
+            save_dashboard(dashboard_charts)

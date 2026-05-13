@@ -87,15 +87,6 @@ def clean_text_columns(df):
 
     return df
 
-
-def clean_text_columns(df):
-    for column in df.columns:
-        if pd.api.types.is_string_dtype(df[column]) or pd.api.types.is_object_dtype(df[column]):
-            df[column] =  df[column].str.strip()
-            df[column] =  df[column].replace('', pd.NA)
-
-    return df
-
 def clean_duplicates(df):
     duplicate_count = df.duplicated().sum()
 
