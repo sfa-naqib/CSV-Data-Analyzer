@@ -259,7 +259,7 @@ def handling_missing_values(df):
         if not (0 < threshold < 100):
             raise ValueError
     except ValueError:
-        print("Invalid Input. Valid inputs are integers between 0 and 100")
+        print("Invalid Input. Valid inputs are any numbers between 0 and 100")
         return df
     
     for column in list(df.columns):
@@ -279,6 +279,7 @@ def handling_missing_values(df):
         
         if pd.api.types.is_numeric_dtype(df[column]): 
             df = handling_missing_in_numeric_column(df,column,missing_rows, missing_percentage)
+            print()
         
         elif pd.api.types.is_object_dtype(df[column]) or pd.api.types.is_string_dtype(df[column]):
             df = handling_missing_in_text_columns(df, column, missing_rows, missing_percentage)
