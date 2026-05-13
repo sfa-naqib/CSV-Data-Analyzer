@@ -112,7 +112,7 @@ time.sleep(1)
 df = clean_text_columns(df)
 print("Text columns have been cleaned.\n")
 
-print("\nNowChecking for Duplicate Rows...")
+print("\nNow Checking for Duplicate Rows...")
 df = clean_duplicates(df)
 
 print("\n\nChecking Categorical (Text) Columns for Consistency...")
