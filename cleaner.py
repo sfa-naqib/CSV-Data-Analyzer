@@ -113,7 +113,8 @@ def make_categorical_consistent(df):
         print(f"Process for making Categorical Column values consistent starting... ")
         print(f"Column Name: {column}")
         print(f"Number of Unique Values: {no_of_unique_values}")
-        print(f"Unique Values: {list(unique_values)}")
+        if no_of_unique_values <= 50:
+            print(f"Unique Values: {list(unique_values)}")
 
         handling_choice = input("\nWhat do you want to do with this column?:"
                                 "\n1. Make all values lowercase"
