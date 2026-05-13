@@ -2,20 +2,65 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-def ask_to_save(chart_name):
-    save_choice = input("\nDo you want to save this chart? (y/n): ").strip().lower()
+def ask_to_save(chart_name, dashboard_charts):
+    save_choice = input("\nWhat do you want to do with this chart?:"
+                        "\n1. Show only"
+                        "\n2. Save as PNG"
+                        "\n3. Add to dashboard"
+                        "\nEnter Choice: ").strip()
 
-    if save_choice == 'y':
+    if save_choice == '1':
+        plt.show()
+    elif save_choice == '2':
         filename = input("Enter a filename (without extension): ").strip()
         if not filename:
             filename = chart_name
         plt.savefig(f"{filename}.png", bbox_inches='tight')
         print(f"Chart saved as {filename}.png")
-    elif save_choice == 'n':
-        pass
+        plt.show()
+    elif save_choice == '3':
+        if len(dashboard_charts) >= 8:
+            print("Dashboard is full. Maximum 8 charts allowed.")
+            plt.show()
+        else:
+            dashboard_charts.append((chart_name, plt.gcf()))
+            print(f"Chart added to dashboard. ({len(dashboard_charts)}/8 slots used)")
+            plt.close()
     else:
         print("Invalid Input. Chart not saved.")
+        plt.show()
 
+def save_dashboard(dashboard_charts):
+    if not dashboard_charts:
+        print("No charts in dashboard.")
+        return
+
+    no_of_charts = len(dashboard_charts)
+
+    no_of_columns = 2
+    no_of_rows = (no_of_charts + 1) // 2
+
+    fig, axes = plt.subplots(no_of_rows, no_of_columns, figsize=(14, no_of_rows * 5))
+    axes = axes.flatten()  
+
+    for i, (chart_name, saved_fig) in enumerate(dashboard_charts):
+        saved_fig.canvas.draw()
+        image = np.frombuffer(saved_fig.canvas.tostring_rgb(), dtype=np.uint8)
+        image = image.reshape(saved_fig.canvas.get_width_height()[::-1] + (3,))
+        axes[i].imshow(image)
+        axes[i].axis('off')
+        axes[i].set_title(chart_name)
+
+    for j in range(no_of_charts, len(axes)):
+        axes[j].axis('off')
+
+    filename = input("Enter a filename for the dashboard PNG (without extension): ").strip()
+    if not filename:
+        filename = "dashboard"
+
+    plt.savefig(f"{filename}.png", bbox_inches='tight')
+    print(f"Dashboard saved as {filename}.png")
+    plt.show()
 
 def show_column_list(df):
     print('------------------------------------------------------------')
@@ -31,8 +76,7 @@ def show_column_list(df):
         print(f"{index}.  {column}  ({col_type})")
     print('------------------------------------------------------------')
 
-
-def show_histogram(df, column):
+def show_histogram(df, column, dashboard_charts):
     fig, ax = plt.subplots()
 
     ax.hist(df[column].dropna(), bins=20, color='steelblue', edgecolor='black')
@@ -48,10 +92,10 @@ def show_histogram(df, column):
     ax.legend()
     plt.tight_layout()
 
-    ask_to_save(f'histogram_{column}')
+    ask_to_save(f'histogram_{column}', dashboard_charts)
     plt.show()
 
-def show_line_chart(df, column):
+def show_line_chart(df, column, dashboard_charts):
     fig, ax = plt.subplots()
 
     ax.plot(df[column].dropna().reset_index(drop=True), color='steelblue')
@@ -60,10 +104,10 @@ def show_line_chart(df, column):
     ax.set_ylabel(column)
     plt.tight_layout()
 
-    ask_to_save(f'line_{column}')
+    ask_to_save(f'line_{column}', dashboard_charts)
     plt.show()
 
-def show_boxplot_single(df, column):
+def show_boxplot_single(df, column, dashboard_charts):
     fig, ax = plt.subplots()
 
     ax.boxplot(df[column].dropna(), vert=True, patch_artist=True,
@@ -72,10 +116,10 @@ def show_boxplot_single(df, column):
     ax.set_ylabel(column)
     plt.tight_layout()
 
-    ask_to_save(f'boxplot_{column}')
+    ask_to_save(f'boxplot_{column}', dashboard_charts)
     plt.show()
 
-def show_boxplot_multi(df, column):
+def show_boxplot_multi(df, column, dashboard_charts):
     numeric_columns = [col for col in df.columns if pd.api.types.is_numeric_dtype(df[col]) and col != column]
 
     if not numeric_columns:
@@ -108,7 +152,7 @@ def show_boxplot_multi(df, column):
 
     if len(columns_to_plot) < 2:
         print("Not enough valid columns selected. Showing single boxplot instead.")
-        show_boxplot_single(df, column)
+        show_boxplot_single(df, column, dashboard_charts)
         return
 
     data_to_plot = [df[col].dropna() for col in columns_to_plot]
@@ -122,10 +166,10 @@ def show_boxplot_multi(df, column):
     ax.set_ylabel('Values')
     plt.tight_layout()
 
-    ask_to_save('boxplot_comparison')
+    ask_to_save('boxplot_comparison', dashboard_charts)
     plt.show()
 
-def show_scatter_chart(df, column):
+def show_scatter_chart(df, column, dashboard_charts):
     numeric_columns = [col for col in df.columns if pd.api.types.is_numeric_dtype(df[col]) and col != column]
 
     if not numeric_columns:
@@ -159,10 +203,10 @@ def show_scatter_chart(df, column):
     ax.set_ylabel(column_y)
     plt.tight_layout()
 
-    ask_to_save(f'scatter_{column}_vs_{column_y}')
+    ask_to_save(f'scatter_{column}_vs_{column_y}', dashboard_charts)
     plt.show()
 
-def show_grouped_bar_chart(df, column):
+def show_grouped_bar_chart(df, column, dashboard_charts):
     text_columns = [col for col in df.columns
                     if pd.api.types.is_object_dtype(df[col]) or pd.api.types.is_string_dtype(df[col])]
 
@@ -212,10 +256,10 @@ def show_grouped_bar_chart(df, column):
     ax.legend()
     plt.tight_layout()
 
-    ask_to_save(f'grouped_{column}_by_{group_column}')
+    ask_to_save(f'grouped_{column}_by_{group_column}', dashboard_charts)
     plt.show()
 
-def show_count_bar_chart(df, column):
+def show_count_bar_chart(df, column, dashboard_charts):
     counts = df[column].value_counts()
 
     fig, ax = plt.subplots()
@@ -226,10 +270,10 @@ def show_count_bar_chart(df, column):
     ax.set_ylabel(column)
     plt.tight_layout()
 
-    ask_to_save(f'count_bar_{column}')
+    ask_to_save(f'count_bar_{column}', dashboard_charts)
     plt.show()
 
-def show_pie_chart(df, column):
+def show_pie_chart(df, column, dashboard_charts):
     counts = df[column].value_counts()
     total = counts.sum()
 
@@ -251,10 +295,10 @@ def show_pie_chart(df, column):
     ax.set_title(f'Proportion of each value in {column}')
     plt.tight_layout()
 
-    ask_to_save(f'pie_{column}')
+    ask_to_save(f'pie_{column}', dashboard_charts)
     plt.show()
 
-def show_stacked_bar_chart(df, column):
+def show_stacked_bar_chart(df, column, dashboard_charts):
     text_columns = [col for col in df.columns
                     if (pd.api.types.is_object_dtype(df[col]) or pd.api.types.is_string_dtype(df[col]))
                     and col != column]
@@ -304,10 +348,10 @@ def show_stacked_bar_chart(df, column):
     ax.legend(title=stack_column)
     plt.tight_layout()
 
-    ask_to_save(f'stacked_{column}_by_{stack_column}')
+    ask_to_save(f'stacked_{column}_by_{stack_column}', dashboard_charts)
     plt.show()
 
-def show_chart_menu_for_numeric(df, column):
+def show_chart_menu_for_numeric(df, column, dashboard_charts):
     chart_choice = input(f"\n{column} is a numeric column. What chart do you want?:"
                          "\n1. Histogram with Mean & Median lines"
                          "\n2. Line Chart (shows values across rows)"
@@ -318,21 +362,21 @@ def show_chart_menu_for_numeric(df, column):
                          "\nEnter Choice: ").strip()
 
     if chart_choice == '1':
-        show_histogram(df, column)
+        show_histogram(df, column, dashboard_charts)
     elif chart_choice == '2':
-        show_line_chart(df, column)
+        show_line_chart(df, column, dashboard_charts)
     elif chart_choice == '3':
-        show_boxplot_single(df, column)
+        show_boxplot_single(df, column, dashboard_charts)
     elif chart_choice == '4':
-        show_boxplot_multi(df, column)
+        show_boxplot_multi(df, column, dashboard_charts)
     elif chart_choice == '5':
-        show_scatter_chart(df, column)
+        show_scatter_chart(df, column, dashboard_charts)
     elif chart_choice == '6':
-        show_grouped_bar_chart(df, column)
+        show_grouped_bar_chart(df, column, dashboard_charts)
     else:
         print("Invalid Input. Valid Inputs are 1, 2, 3, 4, 5, 6 only.")
 
-def show_chart_menu_for_text(df, column):
+def show_chart_menu_for_text(df, column, dashboard_charts):
     chart_choice = input(f"\n{column} is a text column. What chart do you want?:"
                          "\n1. Bar Chart - Horizontal (count of each unique value)"
                          "\n2. Pie Chart (proportion of each unique value)"
@@ -340,11 +384,11 @@ def show_chart_menu_for_text(df, column):
                          "\nEnter Choice: ").strip()
 
     if chart_choice == '1':
-        show_count_bar_chart(df, column)
+        show_count_bar_chart(df, column, dashboard_charts)
     elif chart_choice == '2':
-        show_pie_chart(df, column)
+        show_pie_chart(df, column, dashboard_charts)
     elif chart_choice == '3':
-        show_stacked_bar_chart(df, column)
+        show_stacked_bar_chart(df, column, dashboard_charts)
     else:
         print("Invalid Input. Valid Inputs are 1, 2, 3 only.")
 
@@ -376,12 +420,19 @@ def run(df):
         print(f"\nSelected Column: {selected_column}")
 
         if pd.api.types.is_numeric_dtype(df[selected_column]):
-            show_chart_menu_for_numeric(df, selected_column)
+            show_chart_menu_for_numeric(df, selected_column, dashboard_charts)
 
         elif pd.api.types.is_object_dtype(df[selected_column]) or pd.api.types.is_string_dtype(df[selected_column]):
-            show_chart_menu_for_text(df, selected_column)
+            show_chart_menu_for_text(df, selected_column, dashboard_charts)
 
         else:
             print(f"Sorry, {selected_column} is of type '{df[selected_column].dtype}' which is not supported for charting yet.")
 
         print()
+
+        dashboard_charts = []   
+
+        if dashboard_charts:
+            save_choice = input(f"\nYou have {len(dashboard_charts)} charts in your dashboard. Save it? (y/n): ").strip().lower()
+            if save_choice == 'y':
+                save_dashboard(dashboard_charts)
