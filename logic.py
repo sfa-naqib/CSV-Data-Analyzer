@@ -36,7 +36,7 @@ def adjusting_fname(df):
     return df
 
 def adjusting_bonus(df):
-    avg_bonus_team_n_mgmt = df.groupby(['Team','Senior Management']['Bonus %']).mean()
+    avg_bonus_team_n_mgmt = df.groupby(['Team','Senior Management'])['Bonus %'].mean()
     avg_bonus_team = df.groupby['Team']['Bonus %'].mean()
     avg_bonus = df['Bonus %'].mean()
     missing_bonus_rows = df[df['Bonus %'].isnull()]
