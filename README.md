@@ -1,3 +1,6 @@
+# Backstory:
+When I worked in Sales, I hated the time it took for data analysis, reporting and presentations. So if there were a tool, that'd clean and prepare the data for analysis, make reporting and presentation easy; that'd be awesome. This CSV data analyzer is the first step to that ultimate tool.
+
 # CSV Data Analyzer
 
 A terminal-based, interactive data cleaning tool built with Python. You load a CSV file, and the tool guides you step by step — fixing column types, handling missing values, removing duplicates, and more. After cleaning, you can also visualize the data with charts.

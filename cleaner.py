@@ -3,7 +3,7 @@ import re
 
 def standardize_column_names(df):
     for column in df.columns:
-        pattern = r'[^a-zA-Z 0-9]'
+        pattern = r'[^a-zA-Z _0-9]'
         new_name = re.sub(pattern, '', column)
         new_name = new_name.strip()
         new_name = new_name.lower()

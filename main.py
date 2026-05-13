@@ -161,7 +161,6 @@ output_filepath = "Data/" + output_filename
 df.to_csv(output_filepath, index=False)
 print(f"\n\nCleaned file saved as: {output_filepath}")
 
-
 dashboard_choice = input("\nDo you want to create charts for the cleaned data? (y/n): ").strip().lower()
 
 if dashboard_choice == 'y':

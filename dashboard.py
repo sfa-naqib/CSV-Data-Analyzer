@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 def ask_to_save(chart_name, dashboard_charts):
     save_choice = input("\nWhat do you want to do with this chart?:"
@@ -15,8 +16,9 @@ def ask_to_save(chart_name, dashboard_charts):
         filename = input("Enter a filename (without extension): ").strip()
         if not filename:
             filename = chart_name
-        plt.savefig(f"{filename}.png", bbox_inches='tight')
-        print(f"Chart saved as {filename}.png")
+        os.makedirs("Charts", exist_ok=True)
+        plt.savefig(f"Charts/{filename}.png", bbox_inches='tight')
+        print(f"Chart saved as Charts/{filename}.png")
         plt.show()
     elif save_choice == '3':
         if len(dashboard_charts) >= 8:
@@ -47,7 +49,7 @@ def save_dashboard(dashboard_charts):
         saved_fig.canvas.draw()
         image = np.frombuffer(saved_fig.canvas.tostring_argb(), dtype=np.uint8)
         image = image.reshape(saved_fig.canvas.get_width_height()[::-1] + (4,))
-        image = image[:, :, 1:]   # ARGB has 4 channels, this drops the A and keeps RGB
+        image = image[:, :, 1:]   
         axes[i].imshow(image)
         axes[i].axis('off')
         axes[i].set_title(chart_name)
@@ -59,8 +61,9 @@ def save_dashboard(dashboard_charts):
     if not filename:
         filename = "dashboard"
 
-    plt.savefig(f"{filename}.png", bbox_inches='tight')
-    print(f"Dashboard saved as {filename}.png")
+    os.makedirs("Charts", exist_ok=True)
+    plt.savefig(f"Charts/{filename}.png", bbox_inches='tight')
+    print(f"Dashboard saved as Charts/{filename}.png")
     plt.show()
 
 def show_column_list(df):
